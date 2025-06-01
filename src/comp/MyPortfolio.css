@@ -1,0 +1,96 @@
+.portfolio-page {
+    display: flex;
+    font-family: 'Segoe UI', sans-serif;
+    color: white;
+    background-color: #1f1f2f;
+    min-height: 100vh;
+}
+
+.sidebar {
+    background-color: #121212;
+    padding: 2rem;
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.sidebar h2 {
+    margin-bottom: 1rem;
+}
+
+.sidebar nav a {
+    display: block;
+    color: #ccc;
+    text-decoration: none;
+    margin-bottom: 1rem;
+}
+
+.sidebar nav a:hover {
+    color: #fff;
+}
+
+.portfolio-main {
+    flex: 1;
+    padding: 2rem;
+}
+
+.header h1 {
+    font-size: 2rem;
+}
+
+.portfolio-stats {
+    margin-top: 1rem;
+    background: #2a2a3e;
+    padding: 1rem;
+    border-radius: 10px;
+}
+
+.gain-row {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.positive {
+    color: #38c172;
+}
+
+.chart-section {
+    margin: 2rem 0;
+    background: #2a2a3e;
+    padding: 1rem;
+    border-radius: 10px;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 2rem;
+}
+
+.info-grid>div {
+    background: #2a2a3e;
+    padding: 1rem;
+    border-radius: 10px;
+}
+
+.dividends .total {
+    margin-bottom: 1rem;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+.pie-placeholder {
+    height: 150px;
+    background: #3b3b5c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: #bbb;
+}

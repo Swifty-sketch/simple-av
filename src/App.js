@@ -1,75 +1,46 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { Bar } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import './App.css';
+import { Line, Bar } from 'react-chartjs-2';
+import Sidebar from './comp/Sidebar';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+} from 'chart.js';
 
-// Register Chart.js components
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
-const FinancialData = ({ symbol, apiKey }) => {
-  const [financialData, setFinancialData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch financial statements using axios
-        const incomeStatement = await axios.get(`https://financialmodelingprep.com/api/v3/income-statement/${symbol}?apikey=${apiKey}`);
-        const balanceSheet = await axios.get(`https://financialmodelingprep.com/api/v3/balance-sheet-statement/${symbol}?apikey=${apiKey}`);
-        const cashFlow = await axios.get(`https://financialmodelingprep.com/api/v3/cash-flow-statement/${symbol}?apikey=${apiKey}`);
-        const dividends = await axios.get(`https://financialmodelingprep.com/api/v3/historical-price-full/stock_dividend/${symbol}?apikey=${apiKey}`);
-
-        // Extract relevant data
-        const latestIncomeStatement = incomeStatement.data[0];
-        const latestBalanceSheet = balanceSheet.data[0];
-        const latestCashFlow = cashFlow.data[0];
-        const latestDividends = dividends.data[0];
-
-        const data = {
-          revenue: latestIncomeStatement.revenue,
-          grossProfit: latestIncomeStatement.grossProfit,
-          netIncome: latestIncomeStatement.netIncome,
-          totalAssets: latestBalanceSheet.totalAssets,
-          totalLiabilities: latestBalanceSheet.totalLiabilities,
-          cash: latestBalanceSheet.cashAndCashEquivalents,
-          debt: latestBalanceSheet.totalDebt,
-          operatingCashFlow: latestCashFlow.operatingCashFlow,
-          freeCashFlow: latestCashFlow.freeCashFlow,
-          dividend: latestDividends ? latestDividends.dividends[0].amount : 'N/A',
-        };
-
-        setFinancialData(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [symbol, apiKey]);
-
-  if (loading) return <p>Loading financial data...</p>;
-  if (error) return <p>Error fetching data: {error}</p>;
-
-  return (
-    <div>
-      <h2>Financial Data for {symbol}</h2>
-      <ul>
-        <li>Revenue: ${financialData.revenue.toLocaleString()}</li>
-        <li>Gross Profit: ${financialData.grossProfit.toLocaleString()}</li>
-        <li>Net Income: ${financialData.netIncome.toLocaleString()}</li>
-        <li>Total Assets: ${financialData.totalAssets.toLocaleString()}</li>
-        <li>Total Liabilities: ${financialData.totalLiabilities.toLocaleString()}</li>
-        <li>Cash: ${financialData.cash.toLocaleString()}</li>
-        <li>Debt: ${financialData.debt.toLocaleString()}</li>
-        <li>Operating Cash Flow: ${financialData.operatingCashFlow.toLocaleString()}</li>
-        <li>Free Cash Flow: ${financialData.freeCashFlow.toLocaleString()}</li>
-        <li>Latest Dividend: ${financialData.dividend}</li>
-      </ul>
-    </div>
-  );
+// Helper function to format large numbers
+const formatLargeNumber = (num) => {
+  if (typeof num !== 'number') return num;
+  
+  if (num >= 1000000000) {
+    return (num / 1000000000).toFixed(1) + 'b';
+  }
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1) + 'm';
+  }
+  if (num >= 1000) {
+    return (num / 1000).toFixed(1) + 'k';
+  }
+  return num.toString();
 };
 
 const App = () => {
@@ -77,127 +48,170 @@ const App = () => {
   const [financialData, setFinancialData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [symbol, setSymbol] = useState('AAPL'); // Default symbol
+  const [symbol, setSymbol] = useState('AAPL');
   const [searchQuery, setSearchQuery] = useState('');
+  const [timeRange, setTimeRange] = useState('1y');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const apiKey = 'q9j7zoVhisoovNS7dvEBmupVTJDAMVu7';
 
-  const apiKey = 'q9j7zoVhisoovNS7dvEBmupVTJDAMVu7'; // Your API key
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
+  const fetchData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const timeseriesMap = { '1y': 365, '6m': 180, '3m': 90, '1m': 30 };
+      const timeseries = timeseriesMap[timeRange] || 365;
+
+      const stockResponse = await axios.get(
+        `https://financialmodelingprep.com/api/v3/historical-price-full/${symbol}?timeseries=${timeseries}&apikey=${apiKey}`
+      );
+      setStockData(stockResponse.data.historical || []);
+
+      const [incomeStatement, balanceSheet, cashFlow, dividends] = await Promise.all([
+        axios.get(`https://financialmodelingprep.com/api/v3/income-statement/${symbol}?apikey=${apiKey}`),
+        axios.get(`https://financialmodelingprep.com/api/v3/balance-sheet-statement/${symbol}?apikey=${apiKey}`),
+        axios.get(`https://financialmodelingprep.com/api/v3/cash-flow-statement/${symbol}?apikey=${apiKey}`),
+        axios.get(`https://financialmodelingprep.com/api/v3/historical-price-full/stock_dividend/${symbol}?apikey=${apiKey}`)
+      ]);
+
+      const latestIncome = incomeStatement.data[0] || {};
+      const latestBalance = balanceSheet.data[0] || {};
+      const latestCashFlow = cashFlow.data[0] || {};
+      const latestDividend = dividends.data[0];
+      const dividendAmount =
+        latestDividend && latestDividend.dividends && latestDividend.dividends.length
+          ? latestDividend.dividends[0].amount
+          : 'N/A';
+
+      setFinancialData({
+        revenue: latestIncome.revenue || 0,
+        grossProfit: latestIncome.grossProfit || 0,
+        netIncome: latestIncome.netIncome || 0,
+        totalAssets: latestBalance.totalAssets || 0,
+        totalLiabilities: latestBalance.totalLiabilities || 0,
+        cash: latestBalance.cashAndCashEquivalents || 0,
+        debt: latestBalance.totalDebt || 0,
+        operatingCashFlow: latestCashFlow.operatingCashFlow || 0,
+        freeCashFlow: latestCashFlow.freeCashFlow || 0,
+        dividend: dividendAmount
+      });
+    } catch (err) {
+      setError(err.message || 'Failed to fetch data');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchStockData = async () => {
-      try {
-        // Fetch historical stock prices for the past 12 months using axios
-        const stockResponse = await axios.get(`https://financialmodelingprep.com/api/v3/historical-price-full/${symbol}?timeseries=365&apikey=${apiKey}`);
-        const stockPrices = stockResponse.data.historical;
-        setStockData(stockPrices);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+    fetchData();
+  }, [symbol, timeRange]);
 
-    const fetchFinancialData = async () => {
-      try {
-        // Fetch financial statements using axios
-        const incomeStatement = await axios.get(`https://financialmodelingprep.com/api/v3/income-statement/${symbol}?apikey=${apiKey}`);
-        const balanceSheet = await axios.get(`https://financialmodelingprep.com/api/v3/balance-sheet-statement/${symbol}?apikey=${apiKey}`);
-        const cashFlow = await axios.get(`https://financialmodelingprep.com/api/v3/cash-flow-statement/${symbol}?apikey=${apiKey}`);
-        const dividends = await axios.get(`https://financialmodelingprep.com/api/v3/historical-price-full/stock_dividend/${symbol}?apikey=${apiKey}`);
+  const handleSearch = (e) => setSearchQuery(e.target.value);
+  
+  const handleSubmitSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) setSymbol(searchQuery.toUpperCase());
+    setSearchQuery('');
+  };
 
-        // Extract relevant data
-        const latestIncomeStatement = incomeStatement.data[0];
-        const latestBalanceSheet = balanceSheet.data[0];
-        const latestCashFlow = cashFlow.data[0];
-        const latestDividends = dividends.data[0];
-
-        const data = {
-          revenue: latestIncomeStatement.revenue,
-          grossProfit: latestIncomeStatement.grossProfit,
-          netIncome: latestIncomeStatement.netIncome,
-          totalAssets: latestBalanceSheet.totalAssets,
-          totalLiabilities: latestBalanceSheet.totalLiabilities,
-          cash: latestBalanceSheet.cashAndCashEquivalents,
-          debt: latestBalanceSheet.totalDebt,
-          operatingCashFlow: latestCashFlow.operatingCashFlow,
-          freeCashFlow: latestCashFlow.freeCashFlow,
-          dividend: latestDividends ? latestDividends.dividends[0].amount : 'N/A',
-        };
-
-        setFinancialData(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchStockData();
-    fetchFinancialData();
-  }, [symbol, apiKey]);
-
-  // Prepare data for the horizontal bar chart
-  const chartData = {
-    labels: stockData.map(entry => entry.date),
+  const stockChartData = {
+    labels: stockData.map(({ date }) => date),
     datasets: [
       {
-        label: 'Stock Price (USD)',
-        data: stockData.map(entry => entry.close),
-        fill: false,
-        borderColor: 'rgb(75, 192, 192)',
-        tension: 0.1,
-      },
-    ],
+        label: `${symbol} Price (USD)`,
+        data: stockData.map(({ close }) => close),
+        borderColor: 'rgb(96, 165, 250)',
+        backgroundColor: 'rgba(96, 165, 250, 0.2)',
+        tension: 0.3,
+        fill: true
+      }
+    ]
   };
 
-  // Chart options to switch to horizontal bar chart
-  const chartOptions = {
-    responsive: true,
-    scales: {
-      x: {
-        beginAtZero: true,
-      },
-      y: {
-        ticks: {
-          maxTicksLimit: 5, // Limit the number of ticks to avoid clutter
-        },
-      },
-    },
+  const financialChartData = {
+    labels: ['Revenue', 'Gross Profit', 'Net Income', 'Assets', 'Cash', 'Debt'],
+    datasets: [
+      {
+        label: 'Amount (USD)',
+        data: financialData
+          ? [
+              financialData.revenue,
+              financialData.grossProfit,
+              financialData.netIncome,
+              financialData.totalAssets,
+              financialData.cash,
+              financialData.debt
+            ]
+          : [],
+        backgroundColor: 'rgba(96, 165, 250, 0.7)',
+        borderColor: 'rgb(96, 165, 250)',
+        borderWidth: 1
+      }
+    ]
   };
 
-  const handleSearch = (event) => {
-    setSearchQuery(event.target.value);
-  };
-
-  const handleSubmitSearch = (event) => {
-    event.preventDefault();
-    setSymbol(searchQuery.toUpperCase()); // Update symbol to search for the new stock
-  };
-
-  if (loading) return <p>Loading stock and financial data...</p>;
-  if (error) return <p>Error fetching data: {error}</p>;
+  if (loading) return <div className="loading">Loading...</div>;
+  if (error) return <div className="error">{error}</div>;
 
   return (
-    <div>
-      <h1>Stock Data and Financial Data</h1>
+    <div className="app">
+      <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
 
-      {/* Search Bar */}
-      <form onSubmit={handleSubmitSearch}>
-        <input 
-          type="text"
-          placeholder="Enter stock symbol"
-          value={searchQuery}
-          onChange={handleSearch}
-        />
-        <button type="submit">Search</button>
-      </form>
-
-      {/* Render the FinancialData Component */}
-      <FinancialData symbol={symbol} apiKey={apiKey} />
-
-      <div>
-        <h2>Stock Price Over the Last 12 Months</h2>
-        <Bar data={chartData} options={chartOptions} />
+      <div className="top-header">
+        <form onSubmit={handleSubmitSearch} className="search-box">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={handleSearch}
+            placeholder="Search Symbol..."
+          />
+        </form>
+        
       </div>
+
+      <main className="main-content">
+        <div className="company-card">
+          <h2>{symbol}</h2>
+          <div className="ticker">Latest Price: ${stockData[0]?.close}</div>
+          <div className="metrics-grid">
+            <div className="metric-card">Revenue: ${formatLargeNumber(financialData.revenue)}</div>
+            <div className="metric-card">Net Income: ${formatLargeNumber(financialData.netIncome)}</div>
+            <div className="metric-card">Cash: ${formatLargeNumber(financialData.cash)}</div>
+            <div className="metric-card">Debt: ${formatLargeNumber(financialData.debt)}</div>
+            <div className="metric-card">Assets: ${formatLargeNumber(financialData.totalAssets)}</div>
+            <div className="metric-card">Liabilities: ${formatLargeNumber(financialData.totalLiabilities)}</div>
+            <div className="metric-card">Free Cash Flow: ${formatLargeNumber(financialData.freeCashFlow)}</div>
+            <div className="metric-card">Dividend: {financialData.dividend}</div>
+          </div>
+        </div>
+
+        <div className="financial-charts">
+          <div className="chart-tile">
+            <h3>Stock Price</h3>
+            <Line data={stockChartData} options={{ responsive: true }} />
+          </div>
+          <div className="chart-tile">
+            <h3>Financial Overview</h3>
+            <Bar data={financialChartData} options={{ responsive: true }} />
+          </div>
+        </div>
+
+        <div className="time-range">
+          <label>Time Range:</label>
+          {['1y', '6m', '3m', '1m'].map((range) => (
+            <button
+              key={range}
+              className={range === timeRange ? 'active' : ''}
+              onClick={() => setTimeRange(range)}
+            >
+              {range}
+            </button>
+          ))}
+        </div>
+      </main>
     </div>
   );
 };
