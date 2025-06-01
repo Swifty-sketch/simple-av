@@ -194,7 +194,7 @@ const App = () => {
             <Line data={stockChartData} options={{ responsive: true }} />
           </div>
           <div className="chart-tile">
-            <h3>Financial Overview</h3>
+            <h3>Financial Overview (TTW)</h3>
             <Bar data={financialChartData} options={{ responsive: true }} />
           </div>
         </div>
