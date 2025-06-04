@@ -20,9 +20,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         <Link to="/portfolio" onClick={toggleSidebar}>
           <span>My Portfolio</span>
         </Link>
-        <Link to="#" onClick={toggleSidebar}>
-          <span>Settings</span>
-        </Link>
       </div>
     </aside>
   );

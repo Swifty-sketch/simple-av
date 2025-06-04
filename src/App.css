@@ -8,8 +8,8 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    background-color: #121212;
-    color: #e2e8f0;
+    background-color: #f4f4f9;
+    color: #333;
     line-height: 1.6;
 }
 
@@ -29,15 +29,15 @@ body {
 }
 
 .error {
-    color: #f87171;
+    color: #d9534f;
 }
 
 
 /* Sidebar Component */
 
 .sidebar {
-    background-color: #121212;
-    color: #e2e8f0;
+    background-color: #ffffff;
+    color: #1f2937;
     width: 220px;
     min-height: 100vh;
     padding: 1rem;
@@ -48,7 +48,7 @@ body {
     flex-direction: column;
     align-items: center;
     z-index: 100;
-    transition: transform 0.3s ease;
+    border-right: 1px solid #e2e8f0;
 }
 
 .sidebar-header {
@@ -60,7 +60,7 @@ body {
 }
 
 .sidebar h2 {
-    color: #60a5fa;
+    color: #2563eb;
     font-size: 1.2rem;
     margin: 0;
 }
@@ -68,7 +68,7 @@ body {
 .close-btn {
     background: none;
     border: none;
-    color: #e2e8f0;
+    color: #1f2937;
     font-size: 1.5rem;
     cursor: pointer;
     display: none;
@@ -78,15 +78,15 @@ body {
 .sidebar .avatar {
     width: 60px;
     height: 60px;
-    background-color: #1e293b;
+    background-color: #e0e7ff;
     border-radius: 50%;
     margin-bottom: 2rem;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: bold;
-    color: #60a5fa;
-    border: 2px solid #3b82f6;
+    color: #2563eb;
+    border: 2px solid #2563eb;
 }
 
 .sidebar .nav-links {
@@ -97,7 +97,7 @@ body {
 }
 
 .sidebar .nav-links a {
-    color: #e2e8f0;
+    color: #1f2937;
     text-decoration: none;
     padding: 0.75rem 1rem;
     border-radius: 6px;
@@ -109,7 +109,7 @@ body {
 }
 
 .sidebar .nav-links a:hover {
-    background-color: #1e293b;
+    background-color: #e0f2fe;
     transform: translateX(4px);
 }
 
@@ -127,42 +127,36 @@ body {
     display: none;
     background: none;
     border: none;
-    color: #e2e8f0;
+    color: #1f2937;
     font-size: 1.5rem;
     cursor: pointer;
     padding: 0.5rem;
     margin-right: 1rem;
-    transition: transform 0.2s ease;
-}
-
-.menu-toggle:hover {
-    transform: scale(1.1);
 }
 
 
-/* Top Header - Updated to match company card width */
+/* Top Header */
 
 .top-header {
-    background-color: #1e293b;
+    background-color: #ffffff;
     padding: 1rem 2rem;
-    color: #e2e8f0;
+    color: #1f2937;
     display: flex;
     align-items: center;
     position: sticky;
     top: 1rem;
     z-index: 90;
-    transition: margin 0.3s ease;
     border-radius: 8px;
     margin: 1rem 0 2rem 220px;
     width: calc(100% - 240px);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e5e7eb;
 }
 
 .top-header h1 {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #60a5fa;
+    color: #2563eb;
     margin-right: auto;
 }
 
@@ -175,52 +169,51 @@ body {
     padding: 0.5rem 1rem;
     font-size: 1rem;
     border-radius: 4px;
-    border: none;
-    background-color: #0f172a;
-    color: #e2e8f0;
-    border: 1px solid #3b82f6;
+    border: 1px solid #cbd5e1;
+    background-color: #ffffff;
+    color: #1f2937;
     width: 200px;
     transition: width 0.3s ease;
 }
 
 .top-header input[type="text"]:focus {
     outline: none;
-    border-color: #60a5fa;
+    border-color: #2563eb;
     width: 250px;
 }
 
 
-/* Main Content - Updated to accommodate new header */
+/* Main Content */
 
 .main-content {
     margin-left: 220px;
     padding: 0 2rem 2rem;
-    background-color: #121212;
+    background-color: #f4f4f9;
     flex: 1;
-    transition: margin 0.3s ease;
 }
 
 
 /* Company Card */
 
 .company-card {
-    background-color: #1e293b;
+    background-color: #ffffff;
     padding: 1.5rem;
     border-radius: 8px;
     margin-bottom: 2rem;
-    color: #e2e8f0;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    color: #1f2937;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
 .company-card h2 {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #60a5fa;
+    color: #2563eb;
     margin-bottom: 0.5rem;
 }
 
 .company-card .ticker {
-    color: #facc15;
+    color: #ca8a04;
     font-size: 1.1rem;
     margin-bottom: 1rem;
 }
@@ -236,17 +229,17 @@ body {
 }
 
 .metric-card {
-    background-color: #0f172a;
+    background-color: #fefefe;
     padding: 1rem;
     border-radius: 6px;
-    border: 1px solid #3b82f6;
-    color: #e2e8f0;
+    border: 1px solid #cbd5e1;
+    color: #1f2937;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .metric-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(96, 165, 250, 0.2);
+    box-shadow: 0 4px 8px rgba(37, 99, 235, 0.1);
 }
 
 
@@ -260,15 +253,16 @@ body {
 }
 
 .chart-tile {
-    background-color: #1e293b;
+    background-color: #ffffff;
     border-radius: 10px;
     padding: 1.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
 .chart-tile h3 {
     text-align: center;
-    color: #60a5fa;
+    color: #2563eb;
     font-size: 1.25rem;
     margin-bottom: 1.5rem;
 }
@@ -286,25 +280,25 @@ body {
 
 .time-range label {
     font-weight: 600;
-    color: #e2e8f0;
+    color: #1f2937;
 }
 
 .time-range button {
     padding: 0.5rem 1rem;
-    background-color: #0f172a;
-    color: #e2e8f0;
-    border: 1px solid #3b82f6;
+    background-color: #ffffff;
+    color: #1f2937;
+    border: 1px solid #2563eb;
     border-radius: 4px;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .time-range button:hover {
-    background-color: #1e40af;
+    background-color: #e0f2fe;
 }
 
 .time-range button.active {
-    background-color: #3b82f6;
+    background-color: #2563eb;
     color: white;
     font-weight: 600;
 }

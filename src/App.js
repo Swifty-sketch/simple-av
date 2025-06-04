@@ -27,19 +27,11 @@ ChartJS.register(
   Legend
 );
 
-// Helper function to format large numbers
 const formatLargeNumber = (num) => {
   if (typeof num !== 'number') return num;
-  
-  if (num >= 1000000000) {
-    return (num / 1000000000).toFixed(1) + 'b';
-  }
-  if (num >= 1000000) {
-    return (num / 1000000).toFixed(1) + 'm';
-  }
-  if (num >= 1000) {
-    return (num / 1000).toFixed(1) + 'k';
-  }
+  if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(1) + 'b';
+  if (num >= 1_000_000) return (num / 1_000_000).toFixed(1) + 'm';
+  if (num >= 1_000) return (num / 1_000).toFixed(1) + 'k';
   return num.toString();
 };
 
@@ -52,11 +44,10 @@ const App = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [timeRange, setTimeRange] = useState('1y');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
   const apiKey = 'q9j7zoVhisoovNS7dvEBmupVTJDAMVu7';
 
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
-  };
+  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
   const fetchData = async () => {
     setLoading(true);
@@ -82,9 +73,7 @@ const App = () => {
       const latestCashFlow = cashFlow.data[0] || {};
       const latestDividend = dividends.data[0];
       const dividendAmount =
-        latestDividend && latestDividend.dividends && latestDividend.dividends.length
-          ? latestDividend.dividends[0].amount
-          : 'N/A';
+        latestDividend?.dividends?.[0]?.amount ?? 'N/A';
 
       setFinancialData({
         revenue: latestIncome.revenue || 0,
@@ -110,7 +99,6 @@ const App = () => {
   }, [symbol, timeRange]);
 
   const handleSearch = (e) => setSearchQuery(e.target.value);
-  
   const handleSubmitSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) setSymbol(searchQuery.toUpperCase());
@@ -160,20 +148,17 @@ const App = () => {
     <div className="app">
       <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
 
-      <div className="top-header">
-        <form onSubmit={handleSubmitSearch} className="search-box">
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={handleSearch}
-            placeholder="Search Symbol..."
-          />
-        </form>
-        
-      </div>
-
       <main className="main-content">
         <div className="company-card">
+          <form onSubmit={handleSubmitSearch} className="search-box">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={handleSearch}
+              placeholder="Search Symbol..."
+            />
+          </form>
+
           <h2>{symbol}</h2>
           <div className="ticker">Latest Price: ${stockData[0]?.close}</div>
           <div className="metrics-grid">
